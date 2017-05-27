@@ -3,6 +3,16 @@ necromanticbot
 
 Reports on Twitter necromantic activity.
 
+Define these environment variable when you run `server.js`:
+
+    TWITTER_CONSUMER_KEY=<your key>
+    TWITTER_CONSUMER_SECRET=<your consumer secret>
+    TWITTER_ACCESS_TOKEN=<your access token>
+    TWITTER_ACCESS_TOKEN_SECRET=<your token secret>
+
+    DRY=off
+    VERBOSE=off
+
 License
 -------
 
