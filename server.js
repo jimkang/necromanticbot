@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+var wakeupServer = require('./wakeup-server');
+
 var Twit = require('twit');
 var probable = require('probable');
 var canIChimeIn = require('can-i-chime-in')({
@@ -14,6 +16,8 @@ var lowercaseRegex = /romantic/g;
 var uppercaseRegex = /Romantic/g;
 var allcapsRegex = /ROMANTIC/g;
 var detectionRegex = /romantic/i;
+var hashtagRegex = /#/;
+var linkRegex = /https*:\/\//i;
 
 var lowercaseKeywordForm = 'necromantic';
 var uppercaseKeywordForm = 'Necromantic';
@@ -34,6 +38,7 @@ var streamOpts = {
 
 var stream;
 
+
 function startStreaming() {
   console.log('Starting streaming.')
   stream = twit.stream('statuses/filter', streamOpts);
@@ -42,18 +47,17 @@ function startStreaming() {
 }
 
 function transformTweet(incomingTweet) {
-  if (canIChimeIn(incomingTweet.text) && isNotAReply(incomingTweet) &&
-     incomingTweet.text.match(detectionRegex)) {
+  if (tweetIsUsable(incomingTweet)) {
     
     // Don't tweet too much.
-    if (probable.roll(20) > 0) {
+    if (probable.roll(120) > 0) {
       return;
     }
 
     var transformedText = incomingTweet.text.replace(lowercaseRegex, lowercaseKeywordForm);
     transformedText = transformedText.replace(uppercaseRegex, uppercaseKeywordForm);
     transformedText = transformedText.replace(allcapsRegex, allcapsKeywordForm);
-    transformedText = stripLinks(transformedText);
+    //transformedText = stripLinks(transformedText);
 
     var newTweet = {
       status: transformedText
@@ -95,13 +99,28 @@ function handleStreamError(error) {
   startStreaming();
 }
 
-function stripLinks(s) {
-  return s.replace(/https*:\/\/.*\b/g, '');
-}
+//function stripLinks(s) {
+//  return s.replace(/https*:\/\/.*\b/g, '');
+//}
 
 function isNotAReply(tweet) {
   // Can get fancier later.
   return tweet.text.charAt(0) !== '@';
 }
 
+function tweetIsUsable(incomingTweet) {
+  return canIChimeIn(incomingTweet.text) &&
+     isNotAReply(incomingTweet) &&
+     incomingTweet.text.match(detectionRegex) &&
+     !incomingTweet.text.match(hashtagRegex) &&
+     !incomingTweet.text.match(linkRegex);
+}
+
 startStreaming();
+
+//function logAlive() {
+//  console.log('Still alive.');
+//}
+
+//setInterval(logAlive, 60 * 60 * 1000);
+wakeupServer.listen(process.env.PORT);0
