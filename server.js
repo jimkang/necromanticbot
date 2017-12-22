@@ -50,7 +50,7 @@ function transformTweet(incomingTweet) {
   if (tweetIsUsable(incomingTweet)) {
     
     // Don't tweet too much.
-    if (probable.roll(120) > 0) {
+    if (probable.roll(200) > 0) {
       return;
     }
 
@@ -123,4 +123,4 @@ startStreaming();
 //}
 
 //setInterval(logAlive, 60 * 60 * 1000);
-wakeupServer.listen(process.env.PORT);0
+wakeupServer.listen(process.env.PORT);
